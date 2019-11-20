@@ -30,7 +30,6 @@ class ApiController extends Controller
         $o = WebFCM::firstOrNew(array('user_id' => $id));
         $o->fcm_web_token = $req->fcm;
         $o->save();
-        // Device::sendMsgToDevice($req->fcm, 'Thông báo từ IHT', 'Đơn hàng đã được tạo thành công', []);
         return response()->json([
             'success' => true,
         ], 200);
@@ -38,7 +37,7 @@ class ApiController extends Controller
 
     public function login(Request $request)
     {
-
+        dd(24);
         $this->validate($request, [
             'phone' => 'required|max:255',
             'password' => 'required',
@@ -64,20 +63,14 @@ class ApiController extends Controller
         $user_level = Auth::user()->level;
         $user = Auth::user();
 
-        if ($user_level == 4) {
-            return response()->json([
-                'token' => 'Bearer ' . $jwt_token,
-                'id' => $user->id,
-                'name' => $user->name,
-                'phone' => $user->phone,
-                'email' => $user->email,
-            ]);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Invalid Phone or Password',
-            ], 401);
-        }
+        return response()->json([
+            'token' => 'Bearer ' . $jwt_token,
+            'id' => $user->id,
+            'name' => $user->name,
+            'phone' => $user->phone,
+            'email' => $user->email,
+        ]);
+
     }
     public function customerRegister(Request $request)
     {
