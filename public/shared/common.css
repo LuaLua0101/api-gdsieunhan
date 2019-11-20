@@ -1,0 +1,92 @@
+﻿/*
+    -----------------------------
+            USABLE CSS
+        ADMIN & USER USE
+    -----------------------------
+*/
+.center-text {
+    text-align: center;
+}
+
+.margin-auto {
+    margin: 0 auto;
+}
+
+.img-center {
+    display: block;
+    margin: 0 auto;
+}
+
+a.decNone {
+    text-decoration: none;
+}
+
+/**************Font****************/
+.fSize20px {
+    font-size: 20px !important;
+}
+
+.fWeiBold {
+    font-weight: bold;
+}
+
+/*************Color***************/
+.redColor {
+    color: red;
+}
+/**************Validate****************/
+.validateError {
+    color: #e50300;
+    text-transform: none;
+    font-weight: 700;
+}
+
+.warningMessage {
+    color: #e50303;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.successMessage {
+    color: green;
+    font-weight: bold;
+    font-size: 16px;
+}
+/****************Width*****************/
+.w100 {
+    width: 100%;
+}
+
+.w81px {
+    width: 81px;
+}
+
+/*****************Height*****************/
+.h20px {
+    height: 20px;
+}
+
+.h30px {
+    height: 30px;
+}
+
+.h50px {
+    height: 50px;
+}
+
+.h80px {
+    height: 80px;
+}
+
+.h100px {
+    height: 100px;
+}
+
+.h150px {
+    height: 150px;
+}
+
+/*************Margin*************/
+.margTop1p {
+    margin-top: 1%;
+}
