@@ -2,28 +2,35 @@
 namespace App\Http\Controllers;
 
 use App\Models\Transaction;
+use DB;
 use Illuminate\Http\Request;
+use Response;
 
 class FinanceController extends Controller
 {
-    public function getTransactions()
+    public function get()
     {
-        return Transaction::first();
+        return Transaction::whereDate('created_at', DB::raw('CURDATE()'))->orderBy('id', 'desc')->get();
     }
 
-    public function addTransaction(Request $request)
+    public function add(Request $request)
     {
         $t = new Transaction;
         $t->fee = $request->fee;
         $t->note = $request->note;
         $t->type = $request->type;
+        $t->created_at = time();
         $t->save();
 
-        return 'OK';
+        return Response::json(['id' => $t->id, 'created_at' => date("Y-m-d H:i:s")], 200);
     }
 
-    public function removeTransaction()
+    public function del(Request $request)
     {
-        return Transaction::first();
+        try {
+            $t = Transaction::findOrFail($request->id);
+            $t->delete();
+            return 200;
+        } catch (\Exception $e) {return 500;}
     }
 }
