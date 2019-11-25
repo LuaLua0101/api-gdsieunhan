@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Request;
 
-class User
+class User extends Model
 {
+    protected $table = "users";
     public static function editUser($data)
     {
         try {
@@ -17,7 +19,7 @@ class User
                 ->where('id', $user_id)
                 ->update([
                     'name' => isset($data->name) && $data->name !== "undefined"
-                        && $data->name !== null ? $data->name : '',
+                    && $data->name !== null ? $data->name : '',
                     'updated_at' => date('Y-m-d h:i:s'),
                 ]);
             return 200;

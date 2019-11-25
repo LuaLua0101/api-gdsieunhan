@@ -14,6 +14,13 @@ class NotifyController extends Controller
         return Notify::orderBy('id', 'desc')->get();
     }
 
+    public function getDetail(Request $request)
+    {
+        $notify = Notify::find($request->id)->first();
+        $detail = NotifyDetail::where('notify_id', $request->id)->orderBy('seq', 'asc')->get();
+        return Response::json(['notify' => $notify, 'detail' => $detail], 200);
+    }
+
     public function add(Request $request)
     {
         try {
@@ -51,9 +58,12 @@ class NotifyController extends Controller
             DB::beginTransaction();
             $t = Notify::findOrFail($request->id);
             $t->delete();
-//clear all notify detail
+            //clear all notify detail
+            $deletedRows = NotifyDetail::where('notify_id', $request->id)->delete();
             DB::commit();
             return 200;
-        } catch (\Exception $e) {DB::rollback();return 500;}
+        } catch (\Exception $e) {
+            DB::rollback();
+            return $e;}
     }
 }

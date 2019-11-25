@@ -13,6 +13,15 @@ class FinanceController extends Controller
         return Transaction::whereDate('created_at', DB::raw('CURDATE()'))->orderBy('id', 'desc')->get();
     }
 
+    public function getHistories(Request $request)
+    {
+        $from = $request->from;
+        $to = $request->to;
+
+        $data = Transaction::select('id', 'type', 'fee', 'created_at', DB::raw('DATE(created_at) as date'))->whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->orderBy('id', 'desc')->get()->groupBy('date');
+        return $data;
+    }
+
     public function add(Request $request)
     {
         $t = new Transaction;
