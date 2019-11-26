@@ -1,8 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Models\Notify;
-use App\Models\NotifyDetail;
 use App\Models\Student;
 use App\Models\User;
 use DB;
@@ -19,9 +17,16 @@ class StudentController extends Controller
 
     public function getDetail(Request $request)
     {
-        $notify = Notify::find($request->id)->first();
-        $detail = NotifyDetail::where('notify_id', $request->id)->orderBy('seq', 'asc')->get();
-        return Response::json(['notify' => $notify, 'detail' => $detail], 200);
+        // $student = Student::where('id', $request->id)->where('active', null)->first();
+        // $m = User::find('student_id', $request->id)->first();
+        // $f = User::find('student_id', $request->id)->first();
+        try {
+            return Response::json(['student' => Student::findOrFail($request->id),
+                'mom' => User::where('student_id', $request->id)->where('gender', 0)->first(),
+                'dad' => User::where('student_id', $request->id)->where('gender', 1)->first()], 200);
+        } catch (\Exception $e) {
+            return 404;
+        }
     }
 
     public function add(Request $request)
