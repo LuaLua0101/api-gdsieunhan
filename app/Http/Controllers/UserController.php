@@ -18,7 +18,8 @@ class UserController extends Controller
     public function getDetail(Request $request)
     {
         try {
-            return Response::json(['user' => User::findOrFail($request->id)], 200);
+            $user = User::findOrFail($request->id);
+            return Response::json(['user' => $user, 'student' => Student::findOrFail($user->student_id)], 200);
         } catch (\Exception $e) {
             return 404;
         }
@@ -59,50 +60,14 @@ class UserController extends Controller
             DB::beginTransaction();
 
             if ($request->id) {
-                $t = Student::findOrFail($request->id);
+                $t = User::findOrFail($request->id);
                 $t->name = $request->name;
-                $t->alias = $request->alias;
-                $t->fee = $request->fee;
-                $t->note = $request->note;
+                $t->facebook = $request->facebook;
                 $t->gender = $request->gender;
-                $t->dob = $request->dob;
-                $t->sub_id = $request->sub_id;
-                $t->address = $request->address;
+                $t->phone = $request->phone;
                 $t->save();
-
-                $student_id = $t->id;
-
-                //update parent users
-                if ($request->mName) {
-                    $m = User::where('student_id', $request->id)->where('gender', 0)->first();
-                    if ($m === null) {
-                        $m = new User;
-                        $m->type = 2;
-                        $m->gender = 0;
-                        $m->password = Hash::make(123456);
-                        $m->student_id = $request->id;
-                    }
-                    $m->name = $request->mName ? $request->mName : "";
-                    $m->phone = $request->mPhone ? $request->mPhone : "";
-                    $m->facebook = $request->mFB ? $request->mFB : "";
-                    $m->save();
-                }
-
-                if ($request->fName) {
-                    $f = User::where('student_id', $request->id)->where('gender', 1)->first();
-                    if ($f === null) {
-                        $f = new User;
-                        $f->type = 2;
-                        $f->gender = 1;
-                        $f->password = Hash::make(123456);
-                        $f->student_id = $request->id;
-                    }
-                    $f->name = $request->fName ? $request->fName : "";
-                    $f->phone = $request->fPhone ? $request->fPhone : "";
-                    $f->facebook = $request->fFB ? $request->fFB : "";
-                    $f->save();
-                }
             }
+
             DB::commit();
             return Response::json(['status' => 'ok'], 200);
         } catch (Throwable $e) {
