@@ -99,11 +99,15 @@ class TeacherController extends Controller
                 $t = new Timekeeping;
                 $t->user_id = $request->id;
                 $t->date = date("Y-m-d");
+                $t->checkin = "8:00";
+                $t->checkout = "17:00";
                 $t->save();
+                DB::commit();
+                return Response::json(['checkin' => $t], 200);
             }
 
-            DB::commit();
-            return 200;
+            DB::rollback();
+            return Response::json(404);
         } catch (Throwable $e) {
             DB::rollback();
             return Response::json(['status' => 'fail'], 500);
