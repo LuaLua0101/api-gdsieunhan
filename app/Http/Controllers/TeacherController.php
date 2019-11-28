@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\Timekeeping;
 use App\Models\User;
 use DB;
 use Illuminate\Http\Request;
@@ -12,6 +13,16 @@ class TeacherController extends Controller
     public function get()
     {
         return User::where('type', '!=', 2)->where('active', null)->orderBy('id', 'desc')->get();
+    }
+
+    public function getTimeKeepingAll(Request $request)
+    {
+        $list = User::where('type', '!=', 2)->where('active', null)->orderBy('id', 'desc')->get();
+        foreach ($list as $i) {
+            $i['checkin'] = Timekeeping::select('id as tid', 'date', 'checkin', 'checkout')->where('user_id', $i->id)->whereDate('date', DB::raw('CURDATE()'))->first();
+        }
+
+        return Response::json(['list' => $list], 200);
     }
 
     public function getDetail(Request $request)
@@ -72,11 +83,44 @@ class TeacherController extends Controller
             }
 
             DB::commit();
-            return Response::json(['status' => 'ok'], 200);
+            return 200;
         } catch (Throwable $e) {
             DB::rollback();
             return Response::json(['status' => 'fail'], 500);
         }
+    }
+
+    public function addCheckin(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            if ($request->id) {
+                $t = new Timekeeping;
+                $t->user_id = $request->id;
+                $t->date = date("Y-m-d");
+                $t->save();
+            }
+
+            DB::commit();
+            return 200;
+        } catch (Throwable $e) {
+            DB::rollback();
+            return Response::json(['status' => 'fail'], 500);
+        }
+    }
+
+    public function removeCheckin(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+            $t = Timekeeping::findOrFail($request->id);
+            $t->delete();
+            DB::commit();
+            return 200;
+        } catch (\Exception $e) {
+            DB::rollback();
+            return $e;}
     }
 
     public function del(Request $request)
