@@ -33,6 +33,7 @@ Route::group(['middleware' => 'auth.jwt'], function () {
         Route::post('remove-checkin', 'TeacherController@removeCheckin')->middleware(['can:get-notifies']);
         Route::post('add', 'TeacherController@add')->middleware(['can:add-notify']);
         Route::post('update', 'TeacherController@update')->middleware(['can:add-notify']);
+        Route::post('update-checkin', 'TeacherController@updateTimekeeping')->middleware(['can:add-notify']);
         Route::post('delete', 'TeacherController@del')->middleware(['can:del-notify']);
     });
 

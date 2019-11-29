@@ -90,6 +90,26 @@ class TeacherController extends Controller
         }
     }
 
+    public function updateTimekeeping(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            if ($request->id) {
+                $t = Timekeeping::findOrFail($request->id);
+                $t->checkin = $request->checkin;
+                $t->checkout = $request->checkout;
+                $t->save();
+            }
+
+            DB::commit();
+            return 200;
+        } catch (Throwable $e) {
+            DB::rollback();
+            return Response::json(['status' => 'fail'], 500);
+        }
+    }
+
     public function addCheckin(Request $request)
     {
         try {
