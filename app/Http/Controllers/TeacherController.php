@@ -25,6 +25,25 @@ class TeacherController extends Controller
         return Response::json(['list' => $list], 200);
     }
 
+    public function getTimeKeepingDetail(Request $request)
+    {
+        $month = date('m');
+        $year = date('Y');
+        $maxDays = date('t');
+        $data = [];
+        for ($i = 1; $i <= $maxDays; $i++) {
+            $date = $year . '-' . $month . '-' . $i;
+            $item = Timekeeping::select('id', 'checkin', 'checkout', 'date')->where('user_id', $request->id)->whereDate('date', '=', $date)->first();
+            if ($item) {
+                $data[] = $item;
+            } else {
+                $data[] = ['date' => $date];
+            }
+        }
+        // $data = Timekeeping::select('id', 'checkin', 'checkout', 'date')->where('user_id', $request->id)->whereDate('date', '>=', $from)->whereDate('date', '<=', $to)->orderBy('id', 'desc')->get()->groupBy('date');
+        return Response::json(['list' => array_reverse($data), 'max_day' => $maxDays, 'month' => $month, 'year' => $year], 200);
+    }
+
     public function getDetail(Request $request)
     {
         try {
@@ -118,7 +137,7 @@ class TeacherController extends Controller
             if ($request->id) {
                 $t = new Timekeeping;
                 $t->user_id = $request->id;
-                $t->date = date("Y-m-d");
+                $t->date = $request->date ? $request->date : date("Y-m-d");
                 $t->checkin = "8:00";
                 $t->checkout = "17:00";
                 $t->save();

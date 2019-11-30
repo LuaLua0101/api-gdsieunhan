@@ -28,6 +28,7 @@ Route::group(['middleware' => 'auth.jwt'], function () {
     Route::group(['prefix' => 'teacher'], function () {
         Route::get('list', 'TeacherController@get')->middleware(['can:get-notifies']);
         Route::post('time-keeping-all', 'TeacherController@getTimeKeepingAll')->middleware(['can:get-notifies']);
+        Route::post('time-keeping', 'TeacherController@getTimeKeepingDetail')->middleware(['can:get-notifies']);
         Route::post('detail', 'TeacherController@getDetail')->middleware(['can:get-notifies']);
         Route::post('add-checkin', 'TeacherController@addCheckin')->middleware(['can:get-notifies']);
         Route::post('remove-checkin', 'TeacherController@removeCheckin')->middleware(['can:get-notifies']);
