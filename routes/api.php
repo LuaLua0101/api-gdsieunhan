@@ -46,4 +46,12 @@ Route::group(['middleware' => 'auth.jwt'], function () {
         Route::post('delete', 'UserController@del')->middleware(['can:del-notify']);
     });
 
+    Route::group(['prefix' => 'skill-group'], function () {
+        Route::get('list', 'SkillGroupController@get')->middleware(['can:get-notifies']);
+        Route::post('detail', 'SkillGroupController@getDetail')->middleware(['can:get-notifies']);
+        Route::post('add', 'SkillGroupController@add')->middleware(['can:add-notify']);
+        Route::post('update', 'SkillGroupController@update')->middleware(['can:add-notify']);
+        Route::post('delete', 'SkillGroupController@del')->middleware(['can:del-notify']);
+    });
+
 });
