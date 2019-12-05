@@ -1,22 +1,25 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Models\SkillGroup;
+use App\Models\Skill;
 use DB;
 use Illuminate\Http\Request;
 use Response;
 
-class SkillGroupController extends Controller
+class SkillController extends Controller
 {
     public function get()
     {
-        return SkillGroup::orderBy('id', 'desc')->get();
+        return DB::table('skills')
+            ->select('skills.id', 'content', 'group_id', 'groups.name')
+            ->leftjoin('groups', 'skills.group_id', '=', 'groups.id')
+            ->get();
     }
 
     public function getDetail(Request $request)
     {
         try {
-            $data = SkillGroup::findOrFail($request->id);
+            $data = Skill::findOrFail($request->id);
             return Response::json(['skill' => $data], 200);
         } catch (\Exception $e) {
             return 404;
@@ -28,9 +31,9 @@ class SkillGroupController extends Controller
         try {
             DB::beginTransaction();
 
-            $t = new SkillGroup;
-            $t->name = $request->name;
-            $t->group_type_id = $request->type;
+            $t = new Skill;
+            $t->content = $request->content;
+            $t->group_id = $request->group;
             $t->created_at = time();
             $t->save();
 
@@ -49,9 +52,9 @@ class SkillGroupController extends Controller
             DB::beginTransaction();
 
             if ($request->id) {
-                $t = SkillGroup::findOrFail($request->id);
-                $t->name = $request->name;
-                $t->group_type_id = $request->type;
+                $t = Skill::findOrFail($request->id);
+                $t->content = $request->content;
+                $t->group_id = $request->group;
                 $t->save();
             }
 
@@ -67,7 +70,7 @@ class SkillGroupController extends Controller
     {
         try {
             DB::beginTransaction();
-            $t = SkillGroup::findOrFail($request->id);
+            $t = Skill::findOrFail($request->id);
             $t->delete();
             DB::commit();
             return 200;

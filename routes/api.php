@@ -12,9 +12,15 @@ Route::group(['middleware' => 'auth.jwt'], function () {
 
     Route::group(['prefix' => 'notify'], function () {
         Route::get('list', 'NotifyController@get')->middleware(['can:get-notifies']);
+        Route::get('teacher-list', 'NotifyController@getTeacherNotifies')->middleware(['can:get-notifies']);
+        Route::get('parent-list', 'NotifyController@getParentNotifies')->middleware(['can:get-notifies']);
         Route::post('detail', 'NotifyController@getDetail')->middleware(['can:get-notifies']);
         Route::post('add', 'NotifyController@add')->middleware(['can:add-notify']);
         Route::post('delete', 'NotifyController@del')->middleware(['can:del-notify']);
+
+        Route::get('pinned-list', 'NotifyController@getPinnedList')->middleware(['can:del-notify']);
+        Route::post('unpin', 'NotifyController@unpinNotify')->middleware(['can:del-notify']);
+        Route::post('pin', 'NotifyController@pinNotify')->middleware(['can:del-notify']);
     });
 
     Route::group(['prefix' => 'student'], function () {
@@ -54,4 +60,11 @@ Route::group(['middleware' => 'auth.jwt'], function () {
         Route::post('delete', 'SkillGroupController@del')->middleware(['can:del-notify']);
     });
 
+    Route::group(['prefix' => 'skill'], function () {
+        Route::get('list', 'SkillController@get')->middleware(['can:get-notifies']);
+        Route::post('detail', 'SkillController@getDetail')->middleware(['can:get-notifies']);
+        Route::post('add', 'SkillController@add')->middleware(['can:add-notify']);
+        Route::post('update', 'SkillController@update')->middleware(['can:add-notify']);
+        Route::post('delete', 'SkillController@del')->middleware(['can:del-notify']);
+    });
 });

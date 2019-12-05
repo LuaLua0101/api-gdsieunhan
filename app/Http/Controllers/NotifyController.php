@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Notify;
 use App\Models\NotifyDetail;
+use App\Models\NotifyPinned;
 use DB;
 use Illuminate\Http\Request;
 use Response;
@@ -12,6 +13,47 @@ class NotifyController extends Controller
     public function get()
     {
         return Notify::orderBy('id', 'desc')->get();
+    }
+
+    public function getTeacherNotifies()
+    {
+        $data = DB::table('notifies')
+            ->rightjoin('notify_pinned', 'notifies.id', '=',
+                DB::raw('notify_pinned.notify_id AND notifies.type = 0'))
+            ->get();
+        return $data;
+    }
+
+    public function getParentNotifies()
+    {
+        return Notify::orderBy('id', 'desc')->get();
+    }
+
+    public function getPinnedList()
+    {
+        return NotifyPinned::get();
+    }
+
+    public function pinNotify(Request $request)
+    {
+        $d = new NotifyPinned;
+        $d->notify_id = $request->id;
+        $d->created_at = time();
+        $d->save();
+        return Response::json(['notify' => $d], 200);
+    }
+
+    public function unpinNotify(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+            $t = NotifyPinned::findOrFail($request->id);
+            $t->delete();
+            DB::commit();
+            return 200;
+        } catch (\Exception $e) {
+            DB::rollback();
+            return $e;}
     }
 
     public function getDetail(Request $request)
@@ -66,4 +108,5 @@ class NotifyController extends Controller
             DB::rollback();
             return $e;}
     }
+
 }
