@@ -62,6 +62,8 @@ Route::group(['middleware' => 'auth.jwt'], function () {
 
     Route::group(['prefix' => 'skill'], function () {
         Route::get('list', 'SkillController@get')->middleware(['can:get-notifies']);
+        Route::get('check-survey', 'SkillController@checkSurveyIsExist')->middleware(['can:get-notifies']);
+        Route::post('list-survey', 'SkillController@getSurveySkillList')->middleware(['can:get-notifies']);
         Route::post('detail', 'SkillController@getDetail')->middleware(['can:get-notifies']);
         Route::post('add', 'SkillController@add')->middleware(['can:add-notify']);
         Route::post('update', 'SkillController@update')->middleware(['can:add-notify']);

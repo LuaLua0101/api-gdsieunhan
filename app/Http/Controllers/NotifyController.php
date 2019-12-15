@@ -18,15 +18,19 @@ class NotifyController extends Controller
     public function getTeacherNotifies()
     {
         $data = DB::table('notifies')
-            ->rightjoin('notify_pinned', 'notifies.id', '=',
+            ->join('notify_pinned', 'notifies.id', '=',
                 DB::raw('notify_pinned.notify_id AND notifies.type = 0'))
             ->get();
-        return $data;
+        return Response::json(['data' => $data], 200);
     }
 
     public function getParentNotifies()
     {
-        return Notify::orderBy('id', 'desc')->get();
+        $data = DB::table('notifies')
+            ->join('notify_pinned', 'notifies.id', '=',
+                DB::raw('notify_pinned.notify_id AND notifies.type = 1'))
+            ->get();
+        return Response::json(['data' => $data], 200);
     }
 
     public function getPinnedList()
@@ -58,9 +62,8 @@ class NotifyController extends Controller
 
     public function getDetail(Request $request)
     {
-        $notify = Notify::find($request->id)->first();
         $detail = NotifyDetail::where('notify_id', $request->id)->orderBy('seq', 'asc')->get();
-        return Response::json(['notify' => $notify, 'detail' => $detail], 200);
+        return Response::json(['detail' => $detail], 200);
     }
 
     public function add(Request $request)
