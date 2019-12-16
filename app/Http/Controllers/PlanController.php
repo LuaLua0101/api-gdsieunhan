@@ -12,14 +12,38 @@ use DB;
 use Illuminate\Http\Request;
 use Response;
 
-class SkillController extends Controller
+class PlanController extends Controller
 {
-    public function get()
+    public function get(Request $request)
     {
-        return DB::table('skills')
-            ->select('skills.id', 'content', 'group_id', 'groups.name')
-            ->leftjoin('groups', 'skills.group_id', '=', 'groups.id')
-            ->get();
+        try {
+            $p = Plan::firstOrCreate(['student_id' => $request->student_id]);
+            $p->teacher_id = Auth::user()->id;
+            $p->save();
+
+            $skillGroups = SkillGroup::orderBy('id', 'desc')->get();
+
+            foreach ($skillGroups as $group) {
+                $data = DB::table('skills')
+                    ->select('skills.id', 'content')
+                    ->where('skills.group_id', $group->id)
+                    ->get();
+                if ($p) {
+                    foreach ($data as $item) {
+                        $survey = PlanDetail::where('plan_id', $p->id)->where('skill_id', $item->id)->first();
+                        if ($survey) {
+                            $item->rate = $survey->rate;
+                            $item->note = $survey->note;
+                        }
+                    }
+                }
+
+                $group->skills = $data;
+            }
+            return Response::json(['data' => $skillGroups, 'plan_id' => $p->id], 200);
+        } catch (\Exception $e) {
+            return $e;
+        }
     }
 
     public function getDetail(Request $request)
