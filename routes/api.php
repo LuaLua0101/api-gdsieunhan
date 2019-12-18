@@ -29,6 +29,12 @@ Route::group(['middleware' => 'auth.jwt'], function () {
         Route::post('add', 'StudentController@add')->middleware(['can:add-notify']);
         Route::post('update', 'StudentController@update')->middleware(['can:add-notify']);
         Route::post('delete', 'StudentController@del')->middleware(['can:del-notify']);
+
+        Route::post('time-keeping-all', 'StudentController@getTimeKeepingAll')->middleware(['can:get-notifies']);
+        Route::post('time-keeping', 'StudentController@getTimeKeepingDetail')->middleware(['can:get-notifies']);
+        Route::post('add-checkin', 'StudentController@addCheckin')->middleware(['can:get-notifies']);
+        Route::post('remove-checkin', 'StudentController@removeCheckin')->middleware(['can:get-notifies']);
+        Route::post('update-checkin', 'StudentController@updateTimekeeping')->middleware(['can:add-notify']);
     });
 
     Route::group(['prefix' => 'teacher'], function () {

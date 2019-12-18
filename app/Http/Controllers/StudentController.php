@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\Student;
 use App\Models\User;
 use DB;
+use App\Models\TimekeepingStudent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Response;
@@ -142,6 +143,91 @@ class StudentController extends Controller
             $t = Student::findOrFail($request->id);
             $t->active = 0;
             $t->save();
+            DB::commit();
+            return 200;
+        } catch (\Exception $e) {
+            DB::rollback();
+            return $e;}
+    }
+
+    public function getTimekeepingAll(Request $request)
+    {
+        $list = Student::where('active', null)->orderBy('id', 'desc')->get();
+        foreach ($list as $i) {
+            $i['checkin'] = TimekeepingStudent::select('id as tid', 'date', 'checkin', 'checkout')->where('student_id', $i->id)->whereDate('date', DB::raw('CURDATE()'))->first();
+        }
+        return Response::json(['list' => $list], 200);
+    }
+
+    public function getTimekeepingDetail(Request $request)
+    {
+        $month = date('m');
+        $year = date('Y');
+        $maxDays = date('t');
+        $data = [];
+        for ($i = 1; $i <= $maxDays; $i++) {
+            $date = $year . '-' . $month . '-' . $i;
+            $item = TimekeepingStudent::select('id', 'checkin', 'checkout', 'date')->where('student_id', $request->id)->whereDate('date', '=', $date)->first();
+            if ($item) {
+                $data[] = $item;
+            } else {
+                $data[] = ['date' => $date];
+            }
+        }
+        // $data = TimekeepingStudent::select('id', 'checkin', 'checkout', 'date')->where('user_id', $request->id)->whereDate('date', '>=', $from)->whereDate('date', '<=', $to)->orderBy('id', 'desc')->get()->groupBy('date');
+        return Response::json(['list' => array_reverse($data), 'max_day' => $maxDays, 'month' => $month, 'year' => $year], 200);
+    }
+
+    public function updateTimekeeping(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            if ($request->id) {
+                $t = TimekeepingStudent::findOrFail($request->id);
+                $t->checkin = $request->checkin;
+                $t->checkout = $request->checkout;
+                $t->save();
+            }
+
+            DB::commit();
+            return 200;
+        } catch (Throwable $e) {
+            DB::rollback();
+            return Response::json(['status' => 'fail'], 500);
+        }
+    }
+
+    public function addCheckin(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            if ($request->id) {
+                $t = new TimekeepingStudent;
+                $t->student_id = $request->id;
+                $t->date = $request->date ? $request->date : date("Y-m-d");
+                $t->checkin = "8:00";
+                $t->checkout = "17:00";
+                $t->save();
+                DB::commit();
+                return Response::json(['checkin' => $t], 200);
+            }
+
+            DB::rollback();
+            return Response::json(404);
+        } catch (Throwable $e) {
+            DB::rollback();
+            return Response::json(['status' => 'fail'], 500);
+        }
+    }
+
+    public function removeCheckin(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+            $t = TimekeepingStudent::findOrFail($request->id);
+            $t->delete();
             DB::commit();
             return 200;
         } catch (\Exception $e) {
