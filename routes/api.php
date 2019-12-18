@@ -79,5 +79,6 @@ Route::group(['middleware' => 'auth.jwt'], function () {
 
     Route::group(['prefix' => 'plan'], function () {
         Route::post('list', 'PlanController@get')->middleware(['can:get-notifies']);
+        Route::post('update', 'PlanController@updatePlan')->middleware(['can:add-notify']);
     });
 });

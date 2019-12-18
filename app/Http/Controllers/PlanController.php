@@ -66,7 +66,7 @@ class PlanController extends Controller
         }
     }
 
-    public function getSurveySkillList(Request $request)
+    public function getPlanSkillList(Request $request)
     {
         try {
             $t = Survey::firstOrCreate(['student_id' => $request->student_id]);
@@ -99,16 +99,9 @@ class PlanController extends Controller
         }
     }
 
-    public function updateSurvey(Request $request)
+    public function updatePlan(Request $request)
     {
         try {
-            $t = SurveyDetail::firstOrCreate(
-                ['survey_id' => $request->survey_id, 'skill_id' => $request->skill_id]
-            );
-            $t->rate = $request->rate;
-            $t->note = $request->note;
-            $t->save();
-
             $p = PlanDetail::firstOrCreate(
                 ['plan_id' => $request->plan_id, 'skill_id' => $request->skill_id]
             );
@@ -116,7 +109,7 @@ class PlanController extends Controller
             $p->note = $request->note;
             $p->save();
 
-            return Response::json(['data' => $t,'p' => $p], 200);
+            return Response::json(['p' => $p], 200);
         } catch (\Exception $e) {
             return $e;
         }
