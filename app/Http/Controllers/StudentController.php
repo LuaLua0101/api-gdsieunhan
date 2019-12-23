@@ -2,9 +2,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Student;
+use App\Models\TimekeepingStudent;
 use App\Models\User;
 use DB;
-use App\Models\TimekeepingStudent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Response;
@@ -16,12 +16,18 @@ class StudentController extends Controller
         return Student::where('active', null)->orderBy('id', 'desc')->get();
     }
 
+    public function getBirthday()
+    {
+        return Student::where('active', null)->whereMonth('dob', date('m'))->orderBy('id', 'desc')->get();
+    }
+
     public function getDetail(Request $request)
     {
         try {
             return Response::json(['student' => Student::findOrFail($request->id),
-                'mom' => User::where('student_id', $request->id)->where('gender', 0)->first(),
-                'dad' => User::where('student_id', $request->id)->where('gender', 1)->first()], 200);
+                'mom' => User::where('student_id', $request->id)->where('type', 2)->where('gender', 0)->first(),
+                'dad' => User::where('student_id', $request->id)->where('type', 2)->where('gender', 1)->first(),
+                'tutor' => User::where('student_id', $request->id)->where('type', 3)->first()], 200);
         } catch (\Exception $e) {
             return 404;
         }
@@ -69,6 +75,16 @@ class StudentController extends Controller
                 $f->password = Hash::make(123456);
                 $f->student_id = $student_id;
                 $f->save();
+            }
+
+            if ($request->tName) {
+                $t = new User;
+                $t->name = $request->tName ? $request->tName : "";
+                $t->phone = $request->tPhone ? $request->tPhone : "";
+                $t->type = 3;
+                $t->password = Hash::make(123456);
+                $t->student_id = $student_id;
+                $t->save();
             }
 
             DB::commit();
@@ -126,6 +142,18 @@ class StudentController extends Controller
                     $f->phone = $request->fPhone ? $request->fPhone : "";
                     $f->facebook = $request->fFB ? $request->fFB : "";
                     $f->save();
+                }
+
+                if ($request->tName) {
+                    $t = User::where('student_id', $request->id)->where('type', 3)->first();
+                    if ($t === null) {
+                        $t = new User;
+                        $t->type = 3;
+                        $t->student_id = $request->id;
+                    }
+                    $t->name = $request->tName ? $request->tName : "";
+                    $t->phone = $request->tPhone ? $request->tPhone : "";
+                    $t->save();
                 }
             }
             DB::commit();

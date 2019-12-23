@@ -35,6 +35,8 @@ Route::group(['middleware' => 'auth.jwt'], function () {
         Route::post('add-checkin', 'StudentController@addCheckin')->middleware(['can:get-notifies']);
         Route::post('remove-checkin', 'StudentController@removeCheckin')->middleware(['can:get-notifies']);
         Route::post('update-checkin', 'StudentController@updateTimekeeping')->middleware(['can:add-notify']);
+
+        Route::get('get-birthday', 'StudentController@getBirthday')->middleware(['can:get-notifies']);
     });
 
     Route::group(['prefix' => 'teacher'], function () {
