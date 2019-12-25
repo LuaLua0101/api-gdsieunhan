@@ -47,6 +47,8 @@ class StudentController extends Controller
             $t->dob = $request->dob;
             $t->sub_id = $request->sub_id;
             $t->address = $request->address;
+            $t->allergic = $request->allergic;
+            $t->hobby = $request->hobby;
             $t->created_at = time();
             $t->save();
 
@@ -109,6 +111,8 @@ class StudentController extends Controller
                 $t->dob = $request->dob;
                 $t->sub_id = $request->sub_id;
                 $t->address = $request->address;
+                $t->allergic = $request->allergic;
+                $t->hobby = $request->hobby;
                 $t->save();
 
                 $student_id = $t->id;
