@@ -21,7 +21,7 @@ class PlanController extends Controller
             $p->teacher_id = Auth::user()->id;
             $p->save();
 
-            $skillGroups = SkillGroup::orderBy('id', 'desc')->get();
+            $skillGroups = SkillGroup::where('type', 1)->orderBy('id', 'desc')->get();
 
             foreach ($skillGroups as $group) {
                 $data = DB::table('skills')

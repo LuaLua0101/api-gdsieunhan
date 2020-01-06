@@ -50,7 +50,7 @@ class SkillController extends Controller
             $p->teacher_id = Auth::user()->id;
             $p->save();
 
-            $skillGroups = SkillGroup::orderBy('id', 'desc')->get();
+            $skillGroups = SkillGroup::where('type', null)->orderBy('id', 'desc')->get();
 
             foreach ($skillGroups as $group) {
                 $data = DB::table('skills')
