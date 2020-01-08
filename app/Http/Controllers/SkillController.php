@@ -85,14 +85,14 @@ class SkillController extends Controller
             $t->note = $request->note;
             $t->save();
 
-            $p = PlanDetail::firstOrCreate(
-                ['plan_id' => $request->plan_id, 'skill_id' => $request->skill_id]
-            );
-            $p->rate = $request->rate;
-            $p->note = $request->note;
-            $p->save();
+            // $p = PlanDetail::firstOrCreate(
+            //     ['plan_id' => $request->plan_id, 'skill_id' => $request->skill_id]
+            // );
+            // $p->rate = $request->rate;
+            // $p->note = $request->note;
+            // $p->save();
 
-            return Response::json(['data' => $t,'p' => $p], 200);
+            return Response::json(['data' => $t,'p' => $t], 200);
         } catch (\Exception $e) {
             return $e;
         }

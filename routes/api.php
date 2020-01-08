@@ -68,6 +68,15 @@ Route::group(['middleware' => 'auth.jwt'], function () {
         Route::post('delete', 'SkillGroupController@del')->middleware(['can:del-notify']);
     });
 
+    Route::group(['prefix' => 'skill-type'], function () {
+        Route::get('list', 'SkillTypeController@get')->middleware(['can:get-notifies']);
+        Route::post('list-by', 'SkillTypeController@listBy')->middleware(['can:get-notifies']);
+        Route::post('detail', 'SkillTypeController@getDetail')->middleware(['can:get-notifies']);
+        Route::post('add', 'SkillTypeController@add')->middleware(['can:add-notify']);
+        Route::post('update', 'SkillTypeController@update')->middleware(['can:add-notify']);
+        Route::post('delete', 'SkillTypeController@del')->middleware(['can:del-notify']);
+    });
+
     Route::group(['prefix' => 'skill'], function () {
         Route::get('list', 'SkillController@get')->middleware(['can:get-notifies']);
         Route::get('check-survey', 'SkillController@checkSurveyIsExist')->middleware(['can:get-notifies']);
