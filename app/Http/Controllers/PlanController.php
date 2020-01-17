@@ -2,11 +2,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Plan;
+use App\Models\PlanDetail;
 use App\Models\Skill;
 use App\Models\SkillGroup;
 use App\Models\Survey;
 use App\Models\SurveyDetail;
-use App\Models\PlanDetail;
 use Auth;
 use DB;
 use Illuminate\Http\Request;
@@ -25,7 +25,8 @@ class PlanController extends Controller
 
             foreach ($skillGroups as $group) {
                 $data = DB::table('skills')
-                    ->select('skills.id', 'content')
+                    ->select('skills.id', 'content', 'skill_types.name')
+                    ->leftjoin('skill_types', 'skill_types.id', '=', 'skills.type_id')
                     ->where('skills.group_id', $group->id)
                     ->get();
                 if ($p) {
@@ -78,7 +79,8 @@ class PlanController extends Controller
 
             foreach ($skillGroups as $group) {
                 $data = DB::table('skills')
-                    ->select('skills.id', 'content')
+                    ->select('skills.id', 'content', 'skill_types.name')
+                    ->leftjoin('skill_types', 'skill_types.id', '=', 'skills.type_id')
                     ->where('skills.group_id', $group->id)
                     ->get();
                 if ($t) {

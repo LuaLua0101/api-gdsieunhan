@@ -184,9 +184,9 @@ class StudentController extends Controller
 
     public function getTimekeepingAll(Request $request)
     {
-        $list = Student::where('active', null)->orderBy('id', 'desc')->get();
+        $list = Student::select('id', 'name')->where('active', null)->orderBy('id', 'desc')->get();
         foreach ($list as $i) {
-            $i['checkin'] = TimekeepingStudent::select('id as tid', 'date', 'checkin', 'checkout')->where('student_id', $i->id)->whereDate('date', DB::raw('CURDATE()'))->first();
+            $i['checkin'] = TimekeepingStudent::select('id as tid', 'date', 'checkin', 'checkout', 'health_check', 'exercise')->where('student_id', $i->id)->whereDate('date', DB::raw('CURDATE()'))->first();
         }
         return Response::json(['list' => $list], 200);
     }
@@ -199,7 +199,7 @@ class StudentController extends Controller
         $data = [];
         for ($i = 1; $i <= $maxDays; $i++) {
             $date = $year . '-' . $month . '-' . $i;
-            $item = TimekeepingStudent::select('id', 'checkin', 'checkout', 'date')->where('student_id', $request->id)->whereDate('date', '=', $date)->first();
+            $item = TimekeepingStudent::select('id', 'checkin', 'checkout', 'date', 'health_check', 'exercise')->where('student_id', $request->id)->whereDate('date', '=', $date)->first();
             if ($item) {
                 $data[] = $item;
             } else {
@@ -219,6 +219,44 @@ class StudentController extends Controller
                 $t = TimekeepingStudent::findOrFail($request->id);
                 $t->checkin = $request->checkin;
                 $t->checkout = $request->checkout;
+                $t->save();
+            }
+
+            DB::commit();
+            return 200;
+        } catch (Throwable $e) {
+            DB::rollback();
+            return Response::json(['status' => 'fail'], 500);
+        }
+    }
+
+    public function updateHealthCheck(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            if ($request->id) {
+                $t = TimekeepingStudent::findOrFail($request->id);
+                $t->health_check = $request->health_check;
+                $t->save();
+            }
+
+            DB::commit();
+            return 200;
+        } catch (Throwable $e) {
+            DB::rollback();
+            return Response::json(['status' => 'fail'], 500);
+        }
+    }
+
+    public function updateExercise(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            if ($request->id) {
+                $t = TimekeepingStudent::findOrFail($request->id);
+                $t->exercise = $request->exercise;
                 $t->save();
             }
 

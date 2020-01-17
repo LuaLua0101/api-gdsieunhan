@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Student;
 use App\Models\User;
+use Auth;
 use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -13,6 +14,11 @@ class UserController extends Controller
     public function get()
     {
         return User::where('type', 2)->where('active', null)->orderBy('id', 'desc')->get();
+    }
+
+    public function getFeedback()
+    {
+        return User::where('id', Auth::user()->id)->first();
     }
 
     public function getDetail(Request $request)
@@ -67,6 +73,23 @@ class UserController extends Controller
                 $t->phone = $request->phone;
                 $t->save();
             }
+
+            DB::commit();
+            return Response::json(['status' => 'ok'], 200);
+        } catch (Throwable $e) {
+            DB::rollback();
+            return Response::json(['status' => 'fail'], 500);
+        }
+    }
+
+    public function updateFeedback(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            $t = User::findOrFail(Auth::user()->id);
+            $t->feedback = $request->feedback;
+            $t->save();
 
             DB::commit();
             return Response::json(['status' => 'ok'], 200);

@@ -37,6 +37,8 @@ Route::group(['middleware' => 'auth.jwt'], function () {
         Route::post('update-checkin', 'StudentController@updateTimekeeping')->middleware(['can:add-notify']);
 
         Route::get('get-birthday', 'StudentController@getBirthday')->middleware(['can:get-notifies']);
+        Route::post('update-exercise', 'StudentController@updateExercise')->middleware(['can:add-notify']);
+        Route::post('update-health', 'StudentController@updateHealthCheck')->middleware(['can:add-notify']);
     });
 
     Route::group(['prefix' => 'teacher'], function () {
@@ -54,9 +56,11 @@ Route::group(['middleware' => 'auth.jwt'], function () {
 
     Route::group(['prefix' => 'user'], function () {
         Route::get('list', 'UserController@get')->middleware(['can:get-notifies']);
+        Route::get('feedback', 'UserController@getFeedback')->middleware(['can:get-notifies']);
         Route::post('detail', 'UserController@getDetail')->middleware(['can:get-notifies']);
         Route::post('add', 'UserController@add')->middleware(['can:add-notify']);
         Route::post('update', 'UserController@update')->middleware(['can:add-notify']);
+        Route::post('update-feedback', 'UserController@updateFeedback')->middleware(['can:add-notify']);
         Route::post('delete', 'UserController@del')->middleware(['can:del-notify']);
     });
 
